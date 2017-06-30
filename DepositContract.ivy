@@ -1,0 +1,20 @@
+contract DepositAccount(assetDeposited: Asset,
+                        paymentAmountByBank: Amount,
+                        latePaymentAmountByBank:Amount,
+                        paymentDueByBank: Time,//rolls over every day?  How to do a series of payments?
+                        depositor: Program,
+                        bank: Program) locks amountDeposited {
+  clause issuepayment() requires payment: paymentAmountByBank of assetDeposited {
+    verify before(paymentDueByBank)
+    lock payment with depositor
+    lock amountDeposited with bank
+  }
+  clause latepayment() requires payment: latePaymentAmountByBank of assetDeposited { //remember that depositor can withdraw whenever
+    verify after(paymentDueByBank)
+    lock payment with depositor
+    lock amountDeposited with bank
+  }
+  clause withdraw() { //withdraw at any time.  This may be interesting from a fractional reserve standpoint.  Can I have multiple claims on the same assets??
+    lock amountDeposited with depositor
+  }
+}
