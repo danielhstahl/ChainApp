@@ -1,20 +1,26 @@
-contract DepositAccount(assetDeposited: Asset,
+//Initiated by customer, ok'ed by bank
+contract DepositAccount(paymentAsset: Asset,
                         paymentAmountByBank: Amount,
                         latePaymentAmountByBank:Amount,
                         paymentDueByBank: Time,//rolls over every day?  How to do a series of payments?
                         depositor: Program,
-                        bank: Program) locks amountDeposited {
-  clause issuepayment() requires payment: paymentAmountByBank of assetDeposited {
+                        bank: Program,//this is a bank that is chosen by the depositor.  The "bank" is not an account but another contract that locks the value and then disseminates it to loans
+                        withdrawKey: PublicKey) locks amountDeposited {
+  clause acceptdeposit() {
+    lock amountDeposited with bank
+  }                      
+  clause issuepayment() requires payment: paymentAmountByBank of paymentAsset {
     verify before(paymentDueByBank)
     lock payment with depositor
     lock amountDeposited with bank
   }
-  clause latepayment() requires payment: latePaymentAmountByBank of assetDeposited { //remember that depositor can withdraw whenever
+  clause latepayment() requires payment: latePaymentAmountByBank of paymentAsset { //remember that depositor can withdraw whenever
     verify after(paymentDueByBank)
     lock payment with depositor
     lock amountDeposited with bank
   }
-  clause withdraw() { //withdraw at any time.  This may be interesting from a fractional reserve standpoint.  Can I have multiple claims on the same assets??
+  clause withdraw(depositSig:Signature) { //withdraw at any time.  This may be interesting from a fractional reserve standpoint.  Can I have multiple claims on the same assets??
+    verify checkTxSig(withdrawKey, depositSig)
     lock amountDeposited with depositor
   }
 }
