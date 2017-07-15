@@ -15,13 +15,13 @@ This uses the ivy branch of the chain github branch.  It is not available as par
 
 `git clone https://github.com/chain/chain`
 
-Then checkout the `ivy` branch:
+Then cd into the repo and checkout the `ivy` branch:
 
 `git checkout ivy`
 
 Then install the packages required:
 
-`cd chain/sdk/node` 
+`cd sdk/node` 
 
 `npm install`
 
