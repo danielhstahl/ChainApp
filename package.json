@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/phillyfan1138/ChainApp#readme",
   "dependencies": {
-    "chain-sdk": "^1.2.1"
+    "chain-sdk": "^1.2.1",
+    "node-persist": "^2.1.0"
   }
 }
